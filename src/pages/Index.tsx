@@ -1,5 +1,11 @@
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { FilterPanel } from "@/components/FilterPanel";
 
 const Index = () => {
   return (
@@ -13,13 +19,20 @@ const Index = () => {
             </h1>
             <p className="text-lg text-muted-foreground">3 submissions</p>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full h-12 w-20"
-          >
-            <Filter className="h-5 w-5" />
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full h-12 w-20"
+              >
+                <Filter className="h-5 w-5" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-6" align="end">
+              <FilterPanel />
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Three Columns */}

@@ -49,10 +49,10 @@ export function FilterPanel() {
   };
 
   return (
-    <div className="w-[800px] max-h-[600px] overflow-y-auto">
+    <div className="w-[800px] max-h-[600px] overflow-y-auto pb-4">
       <Accordion type="multiple" className="space-y-2">
         {/* Size Filters */}
-        <AccordionItem value="size" className="border rounded-full px-4">
+        <AccordionItem value="size" className="border rounded-md px-4">
           <AccordionTrigger className="hover:no-underline">
             <span className="text-sm font-medium">Size Filters</span>
           </AccordionTrigger>
@@ -114,7 +114,7 @@ export function FilterPanel() {
         </AccordionItem>
 
         {/* Order Requirement */}
-        <AccordionItem value="order" className="border rounded-full px-4">
+        <AccordionItem value="order" className="border rounded-md px-4">
           <AccordionTrigger className="hover:no-underline">
             <span className="text-sm font-medium">Order Requirement</span>
           </AccordionTrigger>
@@ -140,18 +140,18 @@ export function FilterPanel() {
             {/* Production Deadline */}
             <div className="space-y-2">
               <Label>Production Deadline</Label>
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[200px] justify-start text-left font-normal",
+                        "w-[140px] justify-start text-left font-normal text-xs",
                         !startDate && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : "Pick a date"}
+                      <CalendarIcon className="mr-1 h-3 w-3" />
+                      {startDate ? format(startDate, "dd/MM/yy") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -167,7 +167,7 @@ export function FilterPanel() {
                 <Input
                   type="text"
                   placeholder="DD/MM/YYYY"
-                  className="w-32"
+                  className="w-24 text-xs"
                   value={startDate ? format(startDate, "dd/MM/yyyy") : ""}
                   onChange={(e) => {
                     const parts = e.target.value.split("/");
@@ -180,7 +180,7 @@ export function FilterPanel() {
                 />
 
                 <Select value={deadlineOperator} onValueChange={(v) => setDeadlineOperator(v as Operator)}>
-                  <SelectTrigger className="w-20">
+                  <SelectTrigger className="w-16">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -197,12 +197,12 @@ export function FilterPanel() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-[200px] justify-start text-left font-normal",
+                        "w-[140px] justify-start text-left font-normal text-xs",
                         !endDate && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : "Pick a date"}
+                      <CalendarIcon className="mr-1 h-3 w-3" />
+                      {endDate ? format(endDate, "dd/MM/yy") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -218,7 +218,7 @@ export function FilterPanel() {
                 <Input
                   type="text"
                   placeholder="DD/MM/YYYY"
-                  className="w-32"
+                  className="w-24 text-xs"
                   value={endDate ? format(endDate, "dd/MM/yyyy") : ""}
                   onChange={(e) => {
                     const parts = e.target.value.split("/");
@@ -235,7 +235,7 @@ export function FilterPanel() {
         </AccordionItem>
 
         {/* Customer Filter */}
-        <AccordionItem value="customer" className="border rounded-full px-4">
+        <AccordionItem value="customer" className="border rounded-md px-4">
           <AccordionTrigger className="hover:no-underline">
             <span className="text-sm font-medium">Customer Filter</span>
           </AccordionTrigger>
@@ -256,7 +256,7 @@ export function FilterPanel() {
         </AccordionItem>
 
         {/* Status Filters */}
-        <AccordionItem value="status" className="border rounded-full px-4">
+        <AccordionItem value="status" className="border rounded-md px-4">
           <AccordionTrigger className="hover:no-underline">
             <span className="text-sm font-medium">Status Filters</span>
           </AccordionTrigger>
@@ -294,6 +294,12 @@ export function FilterPanel() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+      
+      <div className="mt-6 flex justify-center">
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+          Submit
+        </Button>
+      </div>
     </div>
   );
 }

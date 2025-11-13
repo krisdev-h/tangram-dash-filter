@@ -29,7 +29,7 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground mb-4">
               Pending
             </h2>
-            <div className="bg-card border border-border rounded-lg p-4 min-h-[200px]">
+            <div className="bg-card border border-border rounded-lg p-4 min-h-[600px]">
               {/* Content will go here */}
             </div>
           </div>
@@ -39,8 +39,13 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground mb-4">
               Reviewing
             </h2>
-            <div className="bg-card border border-border rounded-lg p-4 min-h-[200px]">
-              {/* Content will go here */}
+            <div className="bg-card border border-border rounded-lg p-4 min-h-[600px] space-y-3">
+              <div className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center">
+                <span className="text-sm font-medium text-foreground">Square</span>
+              </div>
+              <div className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center">
+                <span className="text-sm font-medium text-foreground">Triangle</span>
+              </div>
             </div>
           </div>
 
@@ -49,8 +54,10 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground mb-4">
               Report
             </h2>
-            <div className="bg-card border border-border rounded-lg p-4 min-h-[200px]">
-              {/* Content will go here */}
+            <div className="bg-card border border-border rounded-lg p-4 min-h-[600px]">
+              <div className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center">
+                <span className="text-sm font-medium text-foreground">Circle</span>
+              </div>
             </div>
           </div>
         </div>

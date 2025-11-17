@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -25,27 +24,19 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { FilterState, SubmissionStage } from "@/types/submission";
 
-type Operator = "<" | ">" | "<=" | ">=" | "=";
+interface FilterPanelProps {
+  filters: FilterState;
+  onFiltersChange: (filters: FilterState) => void;
+}
 
-export function FilterPanel() {
-  const [widthOperator, setWidthOperator] = useState<Operator>("=");
-  const [depthOperator, setDepthOperator] = useState<Operator>("=");
-  const [heightOperator, setHeightOperator] = useState<Operator>("=");
-  const [quantityOperator, setQuantityOperator] = useState<Operator>("=");
-  const [deadlineOperator, setDeadlineOperator] = useState<Operator>("=");
-  
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
-  
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-
-  const handleStatusToggle = (status: string) => {
-    setSelectedStatuses((prev) =>
-      prev.includes(status)
-        ? prev.filter((s) => s !== status)
-        : [...prev, status]
-    );
+export function FilterPanel({ filters, onFiltersChange }: FilterPanelProps) {
+  const handleStatusToggle = (status: SubmissionStage) => {
+    const newStatuses = filters.selectedStatuses.includes(status)
+      ? filters.selectedStatuses.filter((s) => s !== status)
+      : [...filters.selectedStatuses, status];
+    onFiltersChange({ ...filters, selectedStatuses: newStatuses });
   };
 
   return (
@@ -60,7 +51,10 @@ export function FilterPanel() {
             {/* Width */}
             <div className="flex items-center gap-3">
               <Label className="w-24">Width (mm)</Label>
-              <Select value={widthOperator} onValueChange={(v) => setWidthOperator(v as Operator)}>
+              <Select 
+                value={filters.widthOperator} 
+                onValueChange={(v) => onFiltersChange({ ...filters, widthOperator: v })}
+              >
                 <SelectTrigger className="w-20">
                   <SelectValue />
                 </SelectTrigger>
@@ -72,13 +66,22 @@ export function FilterPanel() {
                   <SelectItem value="=">=</SelectItem>
                 </SelectContent>
               </Select>
-              <Input type="number" placeholder="Enter value" className="w-32" />
+              <Input 
+                type="number" 
+                placeholder="Enter value" 
+                className="w-32" 
+                value={filters.widthValue}
+                onChange={(e) => onFiltersChange({ ...filters, widthValue: e.target.value })}
+              />
             </div>
 
             {/* Depth */}
             <div className="flex items-center gap-3">
               <Label className="w-24">Depth (mm)</Label>
-              <Select value={depthOperator} onValueChange={(v) => setDepthOperator(v as Operator)}>
+              <Select 
+                value={filters.depthOperator} 
+                onValueChange={(v) => onFiltersChange({ ...filters, depthOperator: v })}
+              >
                 <SelectTrigger className="w-20">
                   <SelectValue />
                 </SelectTrigger>
@@ -90,13 +93,22 @@ export function FilterPanel() {
                   <SelectItem value="=">=</SelectItem>
                 </SelectContent>
               </Select>
-              <Input type="number" placeholder="Enter value" className="w-32" />
+              <Input 
+                type="number" 
+                placeholder="Enter value" 
+                className="w-32" 
+                value={filters.depthValue}
+                onChange={(e) => onFiltersChange({ ...filters, depthValue: e.target.value })}
+              />
             </div>
 
             {/* Height */}
             <div className="flex items-center gap-3">
               <Label className="w-24">Height (mm)</Label>
-              <Select value={heightOperator} onValueChange={(v) => setHeightOperator(v as Operator)}>
+              <Select 
+                value={filters.heightOperator} 
+                onValueChange={(v) => onFiltersChange({ ...filters, heightOperator: v })}
+              >
                 <SelectTrigger className="w-20">
                   <SelectValue />
                 </SelectTrigger>
@@ -108,7 +120,13 @@ export function FilterPanel() {
                   <SelectItem value="=">=</SelectItem>
                 </SelectContent>
               </Select>
-              <Input type="number" placeholder="Enter value" className="w-32" />
+              <Input 
+                type="number" 
+                placeholder="Enter value" 
+                className="w-32" 
+                value={filters.heightValue}
+                onChange={(e) => onFiltersChange({ ...filters, heightValue: e.target.value })}
+              />
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -121,8 +139,11 @@ export function FilterPanel() {
           <AccordionContent className="space-y-4 pt-4">
             {/* Quantity */}
             <div className="flex items-center gap-3">
-              <Label className="w-40">Quantity</Label>
-              <Select value={quantityOperator} onValueChange={(v) => setQuantityOperator(v as Operator)}>
+              <Label className="w-32">Quantity</Label>
+              <Select 
+                value={filters.quantityOperator} 
+                onValueChange={(v) => onFiltersChange({ ...filters, quantityOperator: v })}
+              >
                 <SelectTrigger className="w-20">
                   <SelectValue />
                 </SelectTrigger>
@@ -134,101 +155,102 @@ export function FilterPanel() {
                   <SelectItem value="=">=</SelectItem>
                 </SelectContent>
               </Select>
-              <Input type="number" placeholder="Enter quantity" className="w-32" />
+              <Input 
+                type="number" 
+                placeholder="Enter value" 
+                className="w-32" 
+                value={filters.quantityValue}
+                onChange={(e) => onFiltersChange({ ...filters, quantityValue: e.target.value })}
+              />
             </div>
 
             {/* Production Deadline */}
             <div className="space-y-2">
               <Label>Production Deadline</Label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       className={cn(
                         "w-[140px] justify-start text-left font-normal text-xs",
-                        !startDate && "text-muted-foreground"
+                        !filters.startDate && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="mr-1 h-3 w-3" />
-                      {startDate ? format(startDate, "dd/MM/yy") : "Pick date"}
+                      <CalendarIcon className="mr-2 h-3 w-3" />
+                      {filters.startDate ? format(filters.startDate, "PP") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
+                      selected={filters.startDate}
+                      onSelect={(date) => onFiltersChange({ ...filters, startDate: date })}
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
-
-                <Input
-                  type="text"
-                  placeholder="DD/MM/YYYY"
-                  className="w-24 text-xs"
-                  value={startDate ? format(startDate, "dd/MM/yyyy") : ""}
-                  onChange={(e) => {
-                    const parts = e.target.value.split("/");
-                    if (parts.length === 3) {
-                      const [day, month, year] = parts.map(Number);
-                      const date = new Date(year, month - 1, day);
-                      if (!isNaN(date.getTime())) setStartDate(date);
-                    }
-                  }}
-                />
-
-                <Select value={deadlineOperator} onValueChange={(v) => setDeadlineOperator(v as Operator)}>
-                  <SelectTrigger className="w-16">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="<">&lt;</SelectItem>
-                    <SelectItem value=">">&gt;</SelectItem>
-                    <SelectItem value="<=">&lt;=</SelectItem>
-                    <SelectItem value=">=">&gt;=</SelectItem>
-                    <SelectItem value="=">=</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-[140px] justify-start text-left font-normal text-xs",
-                        !endDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-1 h-3 w-3" />
-                      {endDate ? format(endDate, "dd/MM/yy") : "Pick date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-
-                <Input
-                  type="text"
-                  placeholder="DD/MM/YYYY"
-                  className="w-24 text-xs"
-                  value={endDate ? format(endDate, "dd/MM/yyyy") : ""}
-                  onChange={(e) => {
-                    const parts = e.target.value.split("/");
-                    if (parts.length === 3) {
-                      const [day, month, year] = parts.map(Number);
-                      const date = new Date(year, month - 1, day);
-                      if (!isNaN(date.getTime())) setEndDate(date);
-                    }
-                  }}
-                />
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="date"
+                    className="w-24 text-xs"
+                    value={filters.startDate ? format(filters.startDate, "yyyy-MM-dd") : ""}
+                    onChange={(e) => {
+                      const date = new Date(e.target.value);
+                      if (!isNaN(date.getTime())) {
+                        onFiltersChange({ ...filters, startDate: date });
+                      }
+                    }}
+                  />
+                  <Select 
+                    value={filters.deadlineOperator} 
+                    onValueChange={(v) => onFiltersChange({ ...filters, deadlineOperator: v })}
+                  >
+                    <SelectTrigger className="w-16 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="<">&lt;</SelectItem>
+                      <SelectItem value=">">&gt;</SelectItem>
+                      <SelectItem value="<=">&lt;=</SelectItem>
+                      <SelectItem value=">=">&gt;=</SelectItem>
+                      <SelectItem value="=">=</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-[140px] justify-start text-left font-normal text-xs",
+                          !filters.endDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-3 w-3" />
+                        {filters.endDate ? format(filters.endDate, "PP") : "Pick date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        selected={filters.endDate}
+                        onSelect={(date) => onFiltersChange({ ...filters, endDate: date })}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <Input
+                    type="date"
+                    className="w-24 text-xs"
+                    value={filters.endDate ? format(filters.endDate, "yyyy-MM-dd") : ""}
+                    onChange={(e) => {
+                      const date = new Date(e.target.value);
+                      if (!isNaN(date.getTime())) {
+                        onFiltersChange({ ...filters, endDate: date });
+                      }
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </AccordionContent>
@@ -242,15 +264,30 @@ export function FilterPanel() {
           <AccordionContent className="space-y-4 pt-4">
             <div className="space-y-2">
               <Label>Company</Label>
-              <Input placeholder="Type or select companies" />
+              <Input 
+                placeholder="Company name" 
+                className="w-full" 
+                value={filters.company}
+                onChange={(e) => onFiltersChange({ ...filters, company: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label>Contact Name</Label>
-              <Input placeholder="Type or select contact names" />
+              <Input 
+                placeholder="Contact name" 
+                className="w-full" 
+                value={filters.contactName}
+                onChange={(e) => onFiltersChange({ ...filters, contactName: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label>Contact Email</Label>
-              <Input placeholder="Type or select contact emails" />
+              <Input 
+                placeholder="Contact email" 
+                className="w-full" 
+                value={filters.contactEmail}
+                onChange={(e) => onFiltersChange({ ...filters, contactEmail: e.target.value })}
+              />
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -264,42 +301,42 @@ export function FilterPanel() {
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="pending"
-                checked={selectedStatuses.includes("pending")}
+                checked={filters.selectedStatuses.includes("pending")}
                 onCheckedChange={() => handleStatusToggle("pending")}
               />
-              <Label htmlFor="pending" className="cursor-pointer">
-                Pending
-              </Label>
+              <Label htmlFor="pending">Pending</Label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="reviewing"
-                checked={selectedStatuses.includes("reviewing")}
+                checked={filters.selectedStatuses.includes("reviewing")}
                 onCheckedChange={() => handleStatusToggle("reviewing")}
               />
-              <Label htmlFor="reviewing" className="cursor-pointer">
-                Reviewing
-              </Label>
+              <Label htmlFor="reviewing">Reviewing</Label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="report"
-                checked={selectedStatuses.includes("report")}
+                checked={filters.selectedStatuses.includes("report")}
                 onCheckedChange={() => handleStatusToggle("report")}
               />
-              <Label htmlFor="report" className="cursor-pointer">
-                Report
-              </Label>
+              <Label htmlFor="report">Report</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="submitted"
+                checked={filters.selectedStatuses.includes("submitted")}
+                onCheckedChange={() => handleStatusToggle("submitted")}
+              />
+              <Label htmlFor="submitted">Submitted</Label>
             </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      
-      <div className="mt-6 flex justify-center">
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
-          Submit
-        </Button>
-      </div>
+
+      <Button className="w-full mt-6 bg-primary text-primary-foreground hover:bg-primary/90">
+        Submit
+      </Button>
     </div>
   );
 }

@@ -5,14 +5,15 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { TriangleViewer } from "./TriangleViewer";
 import tangramLogo from "@/assets/tangram_logo.jpeg";
-
-type ReportStage = "pending" | "reviewing" | "report";
+import { Submission, SubmissionStage } from "@/types/submission";
 
 interface SubmissionReportProps {
   open: boolean;
   onClose: () => void;
-  onStageChange: (stage: ReportStage) => void;
-  stage: ReportStage;
+  onStageChange: (stage: SubmissionStage) => void;
+  stage: SubmissionStage;
+  submission: Submission | null;
+  onSendReport: () => void;
 }
 
 export const SubmissionReport = ({
@@ -20,15 +21,19 @@ export const SubmissionReport = ({
   onClose,
   onStageChange,
   stage,
+  submission,
+  onSendReport,
 }: SubmissionReportProps) => {
+  if (!submission) return null;
+
   const [recommendation, setRecommendation] = useState(
-    "For a production run of **500 units** with dimensions of **150 mm x 100mm x 75 mm**, **traditional tooling** would be the most **cost-effective method**, with an upfront **mold cost** typically ranging from **$5,000 to $15,000**, depending on complexity. Once the mold is created, the **cost per part** would be very low, around **$1 to $3 per unit**, bringing the total to approximately **$500 to $1,500** for 500 units. In contrast, **3D printing** could be used for smaller runs or complex designs, but at a **higher cost per unit**, typically **$10 to $20 per part** for this size, totaling **$5,000 to $10,000** for 500 units. While 3D printing offers **design flexibility** and **quick iterations**, it's not as efficient for **large-scale production**, making traditional tooling the better choice for this project given the **quantity** and **production deadline**."
+    `For a production run of **${submission.quantity} units** with dimensions of **${submission.width} mm x ${submission.depth}mm x ${submission.height} mm**, **traditional tooling** would be the most **cost-effective method**, with an upfront **mold cost** typically ranging from **$5,000 to $15,000**, depending on complexity. Once the mold is created, the **cost per part** would be very low, around **$1 to $3 per unit**, bringing the total to approximately **$500 to $1,500** for ${submission.quantity} units. In contrast, **3D printing** could be used for smaller runs or complex designs, but at a **higher cost per unit**, typically **$10 to $20 per part** for this size, totaling **$5,000 to $10,000** for ${submission.quantity} units. While 3D printing offers **design flexibility** and **quick iterations**, it's not as efficient for **large-scale production**, making traditional tooling the better choice for this project given the **quantity** and **production deadline**.`
   );
   const [isEditingRecommendation, setIsEditingRecommendation] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
   const [executiveSummary, setExecutiveSummary] = useState(
-    "This report provides a comprehensive analysis for the production of 500 triangular units. Based on the project requirements and specifications, we recommend traditional tooling as the most cost-effective manufacturing method."
+    `This report provides a comprehensive analysis for the production of ${submission.quantity} ${submission.shape} units. Based on the project requirements and specifications, we recommend traditional tooling as the most cost-effective manufacturing method.`
   );
   const [isEditingExecutive, setIsEditingExecutive] = useState(false);
 
@@ -50,6 +55,7 @@ export const SubmissionReport = ({
 
   const handleSendReport = () => {
     setEmailSent(true);
+    onSendReport();
   };
 
   const renderBoldText = (text: string) => {
@@ -80,11 +86,20 @@ export const SubmissionReport = ({
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Project Requirements</h3>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Width (mm):</span> 150</p>
-                <p><span className="font-medium">Depth (mm):</span> 100</p>
-                <p><span className="font-medium">Height (mm):</span> 75</p>
-                <p><span className="font-medium">Quantity:</span> 500</p>
-                <p><span className="font-medium">Production Deadline:</span> December 15th, 2025</p>
+                <p><span className="font-medium">Width (mm):</span> {submission.width}</p>
+                <p><span className="font-medium">Depth (mm):</span> {submission.depth}</p>
+                <p><span className="font-medium">Height (mm):</span> {submission.height}</p>
+                <p><span className="font-medium">Quantity:</span> {submission.quantity}</p>
+                <p><span className="font-medium">Production Deadline:</span> {submission.deadline}</p>
+              </div>
+            </div>
+
+            <div className="border border-border rounded-lg p-6">
+              <h3 className="text-xl font-semibold mb-4">Client Information</h3>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Company:</span> {submission.company}</p>
+                <p><span className="font-medium">Contact Name:</span> {submission.contactName}</p>
+                <p><span className="font-medium">Contact Email:</span> {submission.contactEmail}</p>
               </div>
             </div>
 
@@ -141,11 +156,20 @@ export const SubmissionReport = ({
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Project Requirements</h3>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Width (mm):</span> 150</p>
-                <p><span className="font-medium">Depth (mm):</span> 100</p>
-                <p><span className="font-medium">Height (mm):</span> 75</p>
-                <p><span className="font-medium">Quantity:</span> 500</p>
-                <p><span className="font-medium">Production Deadline:</span> December 15th, 2025</p>
+                <p><span className="font-medium">Width (mm):</span> {submission.width}</p>
+                <p><span className="font-medium">Depth (mm):</span> {submission.depth}</p>
+                <p><span className="font-medium">Height (mm):</span> {submission.height}</p>
+                <p><span className="font-medium">Quantity:</span> {submission.quantity}</p>
+                <p><span className="font-medium">Production Deadline:</span> {submission.deadline}</p>
+              </div>
+            </div>
+
+            <div className="border border-border rounded-lg p-6">
+              <h3 className="text-xl font-semibold mb-4">Client Information</h3>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Company:</span> {submission.company}</p>
+                <p><span className="font-medium">Contact Name:</span> {submission.contactName}</p>
+                <p><span className="font-medium">Contact Email:</span> {submission.contactEmail}</p>
               </div>
             </div>
 
@@ -233,11 +257,29 @@ export const SubmissionReport = ({
               </Button>
             </div>
             <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Width (mm):</span> 150</p>
-              <p><span className="font-medium">Depth (mm):</span> 100</p>
-              <p><span className="font-medium">Height (mm):</span> 75</p>
-              <p><span className="font-medium">Quantity:</span> 500</p>
-              <p><span className="font-medium">Production Deadline:</span> December 15th, 2025</p>
+              <p><span className="font-medium">Width (mm):</span> {submission.width}</p>
+              <p><span className="font-medium">Depth (mm):</span> {submission.depth}</p>
+              <p><span className="font-medium">Height (mm):</span> {submission.height}</p>
+              <p><span className="font-medium">Quantity:</span> {submission.quantity}</p>
+              <p><span className="font-medium">Production Deadline:</span> {submission.deadline}</p>
+            </div>
+          </div>
+
+          <div className="border border-border rounded-lg p-6 relative">
+            <div className="flex items-start justify-between mb-4">
+              <h3 className="text-xl font-semibold">Client Information</h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 invisible"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-2 text-sm">
+              <p><span className="font-medium">Company:</span> {submission.company}</p>
+              <p><span className="font-medium">Contact Name:</span> {submission.contactName}</p>
+              <p><span className="font-medium">Contact Email:</span> {submission.contactEmail}</p>
             </div>
           </div>
 
@@ -284,7 +326,7 @@ export const SubmissionReport = ({
                     <th className="text-left py-2">Method</th>
                     <th className="text-left py-2">Upfront Cost</th>
                     <th className="text-left py-2">Cost per Unit</th>
-                    <th className="text-left py-2">Total (500 units)</th>
+                    <th className="text-left py-2">Total ({submission.quantity} units)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -311,7 +353,7 @@ export const SubmissionReport = ({
               className="w-full bg-green-600 hover:bg-green-700 text-white"
               disabled={emailSent}
             >
-              <Plane className="h-4 w-4 mr-2" />
+              <Plane className="mr-2 h-4 w-4" />
               Send Report
             </Button>
             {emailSent && (

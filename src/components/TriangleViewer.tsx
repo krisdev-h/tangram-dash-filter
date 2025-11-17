@@ -4,11 +4,34 @@ import { ZoomIn, ZoomOut, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
-const Triangle = () => {
+const TriangularPrism = () => {
+  // Define vertices for a triangular prism (6 vertices: 3 for front face, 3 for back face)
   const vertices = new Float32Array([
-    0, 1, 0,
-    -1, -1, 0,
-    1, -1, 0,
+    // Front triangle face
+    0, 0.5, 0.5,      // top
+    -0.5, -0.5, 0.5,  // bottom left
+    0.5, -0.5, 0.5,   // bottom right
+    // Back triangle face
+    0, 0.5, -0.5,     // top
+    -0.5, -0.5, -0.5, // bottom left
+    0.5, -0.5, -0.5,  // bottom right
+  ]);
+
+  // Define faces using indices (triangles)
+  const indices = new Uint16Array([
+    // Front face
+    0, 1, 2,
+    // Back face
+    3, 5, 4,
+    // Bottom face (rectangle made of 2 triangles)
+    1, 4, 2,
+    2, 4, 5,
+    // Left side face
+    0, 4, 1,
+    0, 3, 4,
+    // Right side face
+    0, 2, 5,
+    0, 5, 3,
   ]);
 
   return (
@@ -16,12 +39,18 @@ const Triangle = () => {
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={3}
+          count={6}
           array={vertices}
           itemSize={3}
         />
+        <bufferAttribute
+          attach="index"
+          array={indices}
+          count={indices.length}
+          itemSize={1}
+        />
       </bufferGeometry>
-      <meshStandardMaterial color="#00ff00" side={2} />
+      <meshStandardMaterial color="hsl(217, 91%, 60%)" side={2} />
     </mesh>
   );
 };
@@ -61,7 +90,7 @@ export const TriangleViewer = () => {
         <PerspectiveCamera makeDefault position={[3, 3, 5]} />
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
-        <Triangle />
+        <TriangularPrism />
         <Grid />
         <OrbitControls ref={controlsRef} enableDamping />
       </Canvas>

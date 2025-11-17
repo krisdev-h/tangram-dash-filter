@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,8 +7,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { FilterPanel } from "@/components/FilterPanel";
+import { SubmissionReport } from "@/components/SubmissionReport";
 
 const Index = () => {
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportStage, setReportStage] = useState<"pending" | "reviewing" | "report">("pending");
+
+  const handleTriangleClick = () => {
+    setReportOpen(true);
+  };
+
+  const handleStageChange = (stage: "pending" | "reviewing" | "report") => {
+    setReportStage(stage);
+  };
+
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
@@ -42,8 +55,15 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground mb-4">
               Pending
             </h2>
-            <div className="bg-card border border-border rounded-lg p-4 min-h-[600px]">
-              {/* Content will go here */}
+            <div className="bg-card border border-border rounded-lg p-4 min-h-[600px] space-y-3">
+              {reportStage === "pending" && (
+                <div 
+                  className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center cursor-pointer hover:bg-secondary/80 transition-colors"
+                  onClick={handleTriangleClick}
+                >
+                  <span className="text-sm font-medium text-foreground">Triangle</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -56,9 +76,14 @@ const Index = () => {
               <div className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center">
                 <span className="text-sm font-medium text-foreground">Square</span>
               </div>
-              <div className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center">
-                <span className="text-sm font-medium text-foreground">Triangle</span>
-              </div>
+              {reportStage === "reviewing" && (
+                <div 
+                  className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center cursor-pointer hover:bg-secondary/80 transition-colors"
+                  onClick={handleTriangleClick}
+                >
+                  <span className="text-sm font-medium text-foreground">Triangle</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -67,14 +92,29 @@ const Index = () => {
             <h2 className="text-xl font-semibold text-foreground mb-4">
               Report
             </h2>
-            <div className="bg-card border border-border rounded-lg p-4 min-h-[600px]">
+            <div className="bg-card border border-border rounded-lg p-4 min-h-[600px] space-y-3">
               <div className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center">
                 <span className="text-sm font-medium text-foreground">Circle</span>
               </div>
+              {reportStage === "report" && (
+                <div 
+                  className="bg-secondary border border-border rounded-lg p-4 h-24 flex items-center justify-center cursor-pointer hover:bg-secondary/80 transition-colors"
+                  onClick={handleTriangleClick}
+                >
+                  <span className="text-sm font-medium text-foreground">Triangle</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      <SubmissionReport
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        onStageChange={handleStageChange}
+        stage={reportStage}
+      />
     </div>
   );
 };

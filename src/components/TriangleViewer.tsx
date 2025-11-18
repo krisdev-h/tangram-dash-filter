@@ -94,25 +94,20 @@ const Sphere = () => {
   );
 };
 
-const Grid = () => {
-  return (
-    <gridHelper args={[10, 10, 0x888888, 0x444444]} />
-  );
-};
 
 export const TriangleViewer = ({ shape = "triangle" }: { shape?: "triangle" | "square" | "circle" }) => {
   const controlsRef = useRef<any>(null);
 
   const handleZoomIn = () => {
     if (controlsRef.current) {
-      controlsRef.current.dollyIn(1.2);
+      controlsRef.current.dollyOut(1.2);
       controlsRef.current.update();
     }
   };
 
   const handleZoomOut = () => {
     if (controlsRef.current) {
-      controlsRef.current.dollyOut(1.2);
+      controlsRef.current.dollyIn(1.2);
       controlsRef.current.update();
     }
   };
@@ -132,7 +127,6 @@ export const TriangleViewer = ({ shape = "triangle" }: { shape?: "triangle" | "s
         {shape === "triangle" && <TriangularPrism />}
         {shape === "square" && <Cube />}
         {shape === "circle" && <Sphere />}
-        <Grid />
         <OrbitControls ref={controlsRef} enableDamping />
       </Canvas>
       

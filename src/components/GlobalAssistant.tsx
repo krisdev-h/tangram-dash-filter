@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import tangramLogo from "@/assets/tangram_logo.jpeg";
+import tangramLogo from "@/assets/tangram_cube.jpg";
 import { Submission } from "@/types/submission";
 
 interface GlobalAssistantProps {
@@ -27,24 +27,33 @@ export const GlobalAssistant = ({ onNavigate, submissions, onSelectCase }: Globa
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [selectedCase, setSelectedCase] = useState<string>("");
+  const [showBotResponse, setShowBotResponse] = useState(false);
 
   const handleOptionClick = (option: "conversation" | "respond" | "edit") => {
     setSelectedOption(option);
+    setShowBotResponse(true);
     
     if (option === "conversation") {
-      onNavigate("send");
-      setOpen(false);
+      // Don't navigate immediately, wait for selection
     } else if (option === "respond") {
-      onNavigate("received");
-      setOpen(false);
+      // Show dropdown for selecting which message to respond to
     }
   };
 
   const handleCaseSelect = () => {
     if (selectedCase && onSelectCase) {
-      onSelectCase(selectedCase);
-      onNavigate("dashboard");
+      if (selectedOption === "edit") {
+        onSelectCase(selectedCase);
+        onNavigate("dashboard");
+      } else if (selectedOption === "conversation") {
+        onNavigate("send");
+      } else if (selectedOption === "respond") {
+        onNavigate("received");
+      }
       setOpen(false);
+      setSelectedOption(null);
+      setShowBotResponse(false);
+      setSelectedCase("");
     }
   };
 
@@ -64,39 +73,54 @@ export const GlobalAssistant = ({ onNavigate, submissions, onSelectCase }: Globa
           </DialogHeader>
 
           <div className="space-y-4">
-            <div className="flex items-start gap-2">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                <img src={tangramLogo} alt="Tangram" className="w-6 h-6 rounded-full object-cover" />
-              </div>
-              <div className="bg-secondary rounded-lg p-3 flex-1">
-                <p className="text-sm mb-3">Would you like to:</p>
-                <div className="space-y-2">
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => handleOptionClick("conversation")}
-                  >
-                    Open a conversation with a client
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => handleOptionClick("respond")}
-                  >
-                    Respond to a client message
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => handleOptionClick("edit")}
-                  >
-                    Edit a dashboard client case
-                  </Button>
+            {!showBotResponse ? (
+              <div className="flex items-start gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                  <img src={tangramLogo} alt="Tangram" className="w-6 h-6 rounded-full object-cover" />
+                </div>
+                <div className="bg-secondary rounded-lg p-3 flex-1">
+                  <p className="text-sm mb-3">Would you like to:</p>
+                  <div className="space-y-2">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => handleOptionClick("conversation")}
+                    >
+                      Open a conversation with a client
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => handleOptionClick("respond")}
+                    >
+                      Respond to a client message
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      onClick={() => handleOptionClick("edit")}
+                    >
+                      Edit a dashboard client case
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-start gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                  <img src={tangramLogo} alt="Tangram" className="w-6 h-6 rounded-full object-cover" />
+                </div>
+                <div className="bg-secondary rounded-lg p-3 flex-1">
+                  <p className="text-sm">
+                    {selectedOption === "conversation" && "Which client would you like to contact?"}
+                    {selectedOption === "respond" && "Which client message would you like to respond to?"}
+                    {selectedOption === "edit" && "Which case would you like to edit?"}
+                  </p>
+                </div>
+              </div>
+            )}
 
-            {selectedOption === "edit" && (
+            {showBotResponse && (
               <div className="space-y-2">
                 <Select value={selectedCase} onValueChange={setSelectedCase}>
                   <SelectTrigger>

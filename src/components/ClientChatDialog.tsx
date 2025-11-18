@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import tangramLogo from "@/assets/tangram_logo.jpeg";
+import tangramLogo from "@/assets/tangram_cube.jpg";
 
 interface ClientChatDialogProps {
   open: boolean;

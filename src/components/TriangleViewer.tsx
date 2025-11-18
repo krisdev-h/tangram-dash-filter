@@ -3,33 +3,25 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { ZoomIn, ZoomOut, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
+import * as THREE from "three";
 
 const TriangularPrism = () => {
-  // Define vertices for a triangular prism (6 vertices: 3 for front face, 3 for back face)
   const vertices = new Float32Array([
-    // Front triangle face
-    0, 0.5, 0.5,      // top
-    -0.5, -0.5, 0.5,  // bottom left
-    0.5, -0.5, 0.5,   // bottom right
-    // Back triangle face
-    0, 0.5, -0.5,     // top
-    -0.5, -0.5, -0.5, // bottom left
-    0.5, -0.5, -0.5,  // bottom right
+    0, 0.5, 0.5,      
+    -0.5, -0.5, 0.5,  
+    0.5, -0.5, 0.5,   
+    0, 0.5, -0.5,     
+    -0.5, -0.5, -0.5, 
+    0.5, -0.5, -0.5,  
   ]);
 
-  // Define faces using indices (triangles)
   const indices = new Uint16Array([
-    // Front face
     0, 1, 2,
-    // Back face
     3, 5, 4,
-    // Bottom face (rectangle made of 2 triangles)
     1, 4, 2,
     2, 4, 5,
-    // Left side face
     0, 4, 1,
     0, 3, 4,
-    // Right side face
     0, 2, 5,
     0, 5, 3,
   ]);
@@ -50,8 +42,55 @@ const TriangularPrism = () => {
           itemSize={1}
         />
       </bufferGeometry>
-      <meshStandardMaterial color="hsl(217, 91%, 60%)" side={2} />
+      <meshStandardMaterial 
+        color="hsl(210, 100%, 70%)" 
+        transparent 
+        opacity={0.5}
+        side={2}
+      />
+      <lineSegments>
+        <edgesGeometry attach="geometry" args={[new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(vertices, 3)).setIndex(new THREE.BufferAttribute(indices, 1))]} />
+        <lineBasicMaterial attach="material" color="hsl(210, 100%, 70%)" />
+      </lineSegments>
     </mesh>
+  );
+};
+
+const Cube = () => {
+  return (
+    <>
+      <mesh>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial 
+          color="hsl(210, 100%, 70%)" 
+          transparent 
+          opacity={0.5}
+        />
+      </mesh>
+      <lineSegments>
+        <edgesGeometry attach="geometry" args={[new THREE.BoxGeometry(1, 1, 1)]} />
+        <lineBasicMaterial attach="material" color="hsl(210, 100%, 70%)" />
+      </lineSegments>
+    </>
+  );
+};
+
+const Sphere = () => {
+  return (
+    <>
+      <mesh>
+        <sphereGeometry args={[0.7, 32, 32]} />
+        <meshStandardMaterial 
+          color="hsl(210, 100%, 70%)" 
+          transparent 
+          opacity={0.5}
+        />
+      </mesh>
+      <lineSegments>
+        <edgesGeometry attach="geometry" args={[new THREE.SphereGeometry(0.7, 32, 32)]} />
+        <lineBasicMaterial attach="material" color="hsl(210, 100%, 70%)" />
+      </lineSegments>
+    </>
   );
 };
 
@@ -61,7 +100,7 @@ const Grid = () => {
   );
 };
 
-export const TriangleViewer = () => {
+export const TriangleViewer = ({ shape = "triangle" }: { shape?: "triangle" | "square" | "circle" }) => {
   const controlsRef = useRef<any>(null);
 
   const handleZoomIn = () => {
@@ -90,7 +129,9 @@ export const TriangleViewer = () => {
         <PerspectiveCamera makeDefault position={[3, 3, 5]} />
         <ambientLight intensity={0.5} />
         <directionalLight position={[5, 5, 5]} intensity={1} />
-        <TriangularPrism />
+        {shape === "triangle" && <TriangularPrism />}
+        {shape === "square" && <Cube />}
+        {shape === "circle" && <Sphere />}
         <Grid />
         <OrbitControls ref={controlsRef} enableDamping />
       </Canvas>

@@ -81,7 +81,7 @@ export const SubmissionReport = ({
               </Button>
             </div>
 
-            <TriangleViewer />
+          <TriangleViewer shape={submission?.shape as "triangle" | "square" | "circle"} />
 
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Project Requirements</h3>
@@ -151,7 +151,7 @@ export const SubmissionReport = ({
               </Button>
             </div>
 
-            <TriangleViewer />
+            <TriangleViewer shape={submission?.shape as "triangle" | "square" | "circle"} />
 
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Project Requirements</h3>
@@ -242,7 +242,7 @@ export const SubmissionReport = ({
 
           <div>
             <h3 className="text-xl font-semibold mb-4">3D Visual</h3>
-            <TriangleViewer />
+            <TriangleViewer shape={submission?.shape as "triangle" | "square" | "circle"} />
           </div>
 
           <div className="border border-border rounded-lg p-6 relative">

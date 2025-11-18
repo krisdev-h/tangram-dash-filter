@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { TriangleViewer } from "./TriangleViewer";
-import tangramLogo from "@/assets/tangram_logo.jpeg";
+import tangramLogo from "@/assets/tangram_cube.jpg";
 import { Submission, SubmissionStage } from "@/types/submission";
 
 interface SubmissionReportProps {
@@ -141,14 +141,6 @@ export const SubmissionReport = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">3D Preview</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onClose}
-                className="h-8 w-8"
-              >
-                <X className="h-4 w-4" />
-              </Button>
             </div>
 
             <TriangleViewer shape={submission?.shape as "triangle" | "square" | "circle"} />

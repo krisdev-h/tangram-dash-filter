@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Submission } from "@/types/submission";
-import tangramLogo from "@/assets/tangram_logo.jpeg";
+import tangramLogo from "@/assets/tangram_cube.jpg";
+import { RespondDialog } from "@/components/RespondDialog";
 
 interface MessagesProps {
   submissions: Submission[];
@@ -23,6 +24,8 @@ export const Messages = ({ submissions, sentMessages, onSendMessage }: MessagesP
   const [message, setMessage] = useState("");
   const [showChatBot, setShowChatBot] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{ text: string; sender: "user" | "bot" }>>([]);
+  const [respondDialogOpen, setRespondDialogOpen] = useState(false);
+  const [respondingTo, setRespondingTo] = useState<{ clientName: string; originalMessage: string } | null>(null);
 
   const handleSend = () => {
     if (!selectedCase || !message.trim()) return;
@@ -44,7 +47,18 @@ export const Messages = ({ submissions, sentMessages, onSendMessage }: MessagesP
 
   const submittedSubmissions = submissions.filter(s => s.stage === "submitted");
 
+  const handleRespondClick = (clientName: string, originalMessage: string) => {
+    setRespondingTo({ clientName, originalMessage });
+    setRespondDialogOpen(true);
+  };
+
+  const handleSendResponse = (response: string) => {
+    console.log("Sending response:", response);
+    // Here you would typically send the response through your backend
+  };
+
   return (
+    <>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Send Column */}
       <div>
@@ -135,11 +149,29 @@ export const Messages = ({ submissions, sentMessages, onSendMessage }: MessagesP
               <span className="text-sm font-medium">Triangle</span>
               <span className="text-xs text-muted-foreground">Today</span>
             </div>
-            <p className="text-xs text-muted-foreground mb-1">TechCorp Industries</p>
-            <p className="text-sm">Thank you for the detailed report! We'd like to proceed with the traditional tooling method. When can we schedule a call to discuss the next steps?</p>
+            <p className="text-xs text-muted-foreground mb-2">TechCorp Industries</p>
+            <p className="text-sm mb-3">Thank you for the detailed report! We'd like to proceed with the traditional tooling method. When can we schedule a call to discuss the next steps?</p>
+            <Button 
+              size="sm" 
+              onClick={() => handleRespondClick("TechCorp Industries", "Thank you for the detailed report! We'd like to proceed with the traditional tooling method. When can we schedule a call to discuss the next steps?")}
+              className="w-full"
+            >
+              Respond
+            </Button>
           </div>
         </div>
       </div>
     </div>
+
+    {respondingTo && (
+      <RespondDialog
+        open={respondDialogOpen}
+        onClose={() => setRespondDialogOpen(false)}
+        clientName={respondingTo.clientName}
+        originalMessage={respondingTo.originalMessage}
+        onSendResponse={handleSendResponse}
+      />
+    )}
+    </>
   );
 };

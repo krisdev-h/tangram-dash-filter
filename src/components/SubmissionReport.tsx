@@ -81,25 +81,54 @@ export const SubmissionReport = ({
               </Button>
             </div>
 
-          <TriangleViewer shape={submission?.shape as "triangle" | "square" | "circle"} />
+            <TriangleViewer
+              shape={submission.shape as "triangle" | "square" | "circle"}
+              width={submission.width}
+              depth={submission.depth}
+              height={submission.height}
+            />
 
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Project Requirements</h3>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Width (mm):</span> {submission.width}</p>
-                <p><span className="font-medium">Depth (mm):</span> {submission.depth}</p>
-                <p><span className="font-medium">Height (mm):</span> {submission.height}</p>
-                <p><span className="font-medium">Quantity:</span> {submission.quantity}</p>
-                <p><span className="font-medium">Production Deadline:</span> {submission.deadline}</p>
+                <p>
+                  <span className="font-medium">Width (mm):</span>{" "}
+                  {submission.width}
+                </p>
+                <p>
+                  <span className="font-medium">Depth (mm):</span>{" "}
+                  {submission.depth}
+                </p>
+                <p>
+                  <span className="font-medium">Height (mm):</span>{" "}
+                  {submission.height}
+                </p>
+                <p>
+                  <span className="font-medium">Quantity:</span>{" "}
+                  {submission.quantity}
+                </p>
+                <p>
+                  <span className="font-medium">Production Deadline:</span>{" "}
+                  {submission.deadline}
+                </p>
               </div>
             </div>
 
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Client Information</h3>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Company:</span> {submission.company}</p>
-                <p><span className="font-medium">Contact Name:</span> {submission.contactName}</p>
-                <p><span className="font-medium">Contact Email:</span> {submission.contactEmail}</p>
+                <p>
+                  <span className="font-medium">Company:</span>{" "}
+                  {submission.company}
+                </p>
+                <p>
+                  <span className="font-medium">Contact Name:</span>{" "}
+                  {submission.contactName}
+                </p>
+                <p>
+                  <span className="font-medium">Contact Email:</span>{" "}
+                  {submission.contactEmail}
+                </p>
               </div>
             </div>
 
@@ -112,7 +141,9 @@ export const SubmissionReport = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsEditingRecommendation(!isEditingRecommendation)}
+                  onClick={() =>
+                    setIsEditingRecommendation(!isEditingRecommendation)
+                  }
                   className="h-8 w-8"
                 >
                   <Edit2 className="h-4 w-4" />
@@ -125,7 +156,9 @@ export const SubmissionReport = ({
                   className="min-h-[200px]"
                 />
               ) : (
-                <p className="text-sm leading-relaxed">{renderBoldText(recommendation)}</p>
+                <p className="text-sm leading-relaxed">
+                  {renderBoldText(recommendation)}
+                </p>
               )}
             </div>
           </div>
@@ -143,25 +176,54 @@ export const SubmissionReport = ({
               <h2 className="text-2xl font-bold">3D Preview</h2>
             </div>
 
-            <TriangleViewer shape={submission?.shape as "triangle" | "square" | "circle"} />
+            <TriangleViewer
+              shape={submission.shape as "triangle" | "square" | "circle"}
+              width={submission.width}
+              depth={submission.depth}
+              height={submission.height}
+            />
 
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Project Requirements</h3>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Width (mm):</span> {submission.width}</p>
-                <p><span className="font-medium">Depth (mm):</span> {submission.depth}</p>
-                <p><span className="font-medium">Height (mm):</span> {submission.height}</p>
-                <p><span className="font-medium">Quantity:</span> {submission.quantity}</p>
-                <p><span className="font-medium">Production Deadline:</span> {submission.deadline}</p>
+                <p>
+                  <span className="font-medium">Width (mm):</span>{" "}
+                  {submission.width}
+                </p>
+                <p>
+                  <span className="font-medium">Depth (mm):</span>{" "}
+                  {submission.depth}
+                </p>
+                <p>
+                  <span className="font-medium">Height (mm):</span>{" "}
+                  {submission.height}
+                </p>
+                <p>
+                  <span className="font-medium">Quantity:</span>{" "}
+                  {submission.quantity}
+                </p>
+                <p>
+                  <span className="font-medium">Production Deadline:</span>{" "}
+                  {submission.deadline}
+                </p>
               </div>
             </div>
 
             <div className="border border-border rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-4">Client Information</h3>
               <div className="space-y-2 text-sm">
-                <p><span className="font-medium">Company:</span> {submission.company}</p>
-                <p><span className="font-medium">Contact Name:</span> {submission.contactName}</p>
-                <p><span className="font-medium">Contact Email:</span> {submission.contactEmail}</p>
+                <p>
+                  <span className="font-medium">Company:</span>{" "}
+                  {submission.company}
+                </p>
+                <p>
+                  <span className="font-medium">Contact Name:</span>{" "}
+                  {submission.contactName}
+                </p>
+                <p>
+                  <span className="font-medium">Contact Email:</span>{" "}
+                  {submission.contactEmail}
+                </p>
               </div>
             </div>
 
@@ -174,7 +236,9 @@ export const SubmissionReport = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsEditingRecommendation(!isEditingRecommendation)}
+                  onClick={() =>
+                    setIsEditingRecommendation(!isEditingRecommendation)
+                  }
                   className="h-8 w-8"
                 >
                   <Edit2 className="h-4 w-4" />
@@ -187,7 +251,9 @@ export const SubmissionReport = ({
                   className="min-h-[200px]"
                 />
               ) : (
-                <p className="text-sm leading-relaxed">{renderBoldText(recommendation)}</p>
+                <p className="text-sm leading-relaxed">
+                  {renderBoldText(recommendation)}
+                </p>
               )}
             </div>
 
@@ -234,7 +300,12 @@ export const SubmissionReport = ({
 
           <div>
             <h3 className="text-xl font-semibold mb-4">3D Visual</h3>
-            <TriangleViewer shape={submission?.shape as "triangle" | "square" | "circle"} />
+            <TriangleViewer
+              shape={submission.shape as "triangle" | "square" | "circle"}
+              width={submission.width}
+              depth={submission.depth}
+              height={submission.height}
+            />
           </div>
 
           <div className="border border-border rounded-lg p-6 relative">
@@ -249,11 +320,26 @@ export const SubmissionReport = ({
               </Button>
             </div>
             <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Width (mm):</span> {submission.width}</p>
-              <p><span className="font-medium">Depth (mm):</span> {submission.depth}</p>
-              <p><span className="font-medium">Height (mm):</span> {submission.height}</p>
-              <p><span className="font-medium">Quantity:</span> {submission.quantity}</p>
-              <p><span className="font-medium">Production Deadline:</span> {submission.deadline}</p>
+              <p>
+                <span className="font-medium">Width (mm):</span>{" "}
+                {submission.width}
+              </p>
+              <p>
+                <span className="font-medium">Depth (mm):</span>{" "}
+                {submission.depth}
+              </p>
+              <p>
+                <span className="font-medium">Height (mm):</span>{" "}
+                {submission.height}
+              </p>
+              <p>
+                <span className="font-medium">Quantity:</span>{" "}
+                {submission.quantity}
+              </p>
+              <p>
+                <span className="font-medium">Production Deadline:</span>{" "}
+                {submission.deadline}
+              </p>
             </div>
           </div>
 
@@ -269,19 +355,32 @@ export const SubmissionReport = ({
               </Button>
             </div>
             <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Company:</span> {submission.company}</p>
-              <p><span className="font-medium">Contact Name:</span> {submission.contactName}</p>
-              <p><span className="font-medium">Contact Email:</span> {submission.contactEmail}</p>
+              <p>
+                <span className="font-medium">Company:</span>{" "}
+                {submission.company}
+              </p>
+              <p>
+                <span className="font-medium">Contact Name:</span>{" "}
+                {submission.contactName}
+              </p>
+              <p>
+                <span className="font-medium">Contact Email:</span>{" "}
+                {submission.contactEmail}
+              </p>
             </div>
           </div>
 
           <div className="border border-border rounded-lg p-6 relative">
             <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-semibold">Recommended Manufacturing Method</h3>
+              <h3 className="text-xl font-semibold">
+                Recommended Manufacturing Method
+              </h3>
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsEditingManufacturing(!isEditingManufacturing)}
+                onClick={() =>
+                  setIsEditingManufacturing(!isEditingManufacturing)
+                }
                 className="h-8 w-8"
               >
                 <Edit2 className="h-4 w-4" />
@@ -295,9 +394,13 @@ export const SubmissionReport = ({
                 className="min-h-[100px]"
               />
             ) : (
-              <p className="text-sm leading-relaxed mb-4">{manufacturingDetails}</p>
+              <p className="text-sm leading-relaxed mb-4">
+                {manufacturingDetails}
+              </p>
             )}
-            <p className="text-sm leading-relaxed">{renderBoldText(recommendation)}</p>
+            <p className="text-sm leading-relaxed">
+              {renderBoldText(recommendation)}
+            </p>
           </div>
 
           <div className="border border-border rounded-lg p-6 relative">
@@ -318,7 +421,9 @@ export const SubmissionReport = ({
                     <th className="text-left py-2">Method</th>
                     <th className="text-left py-2">Upfront Cost</th>
                     <th className="text-left py-2">Cost per Unit</th>
-                    <th className="text-left py-2">Total ({submission.quantity} units)</th>
+                    <th className="text-left py-2">
+                      Total ({submission.quantity} units)
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

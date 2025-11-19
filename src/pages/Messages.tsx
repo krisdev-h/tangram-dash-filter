@@ -51,6 +51,9 @@ export const Messages = ({
   const [respondClientName, setRespondClientName] = useState<string>("");
   const [respondOriginalMessage, setRespondOriginalMessage] =
     useState<string>("");
+  const [respondSubmissionId, setRespondSubmissionId] = useState<string | null>(
+    null
+  );
 
   // Derived "received" messages (reference from each submission)
   const receivedMessages = submissions.map((submission) => {
@@ -119,10 +122,17 @@ export const Messages = ({
     setAssistantDialogOpen(false);
   };
 
+  // When we hit "Send Response" in the RespondDialog,
+  // push the response into Sent for that client/case.
   const handleSendResponse = (response: string) => {
-    console.log("Sending response:", response);
+    if (!response.trim() || !respondSubmissionId) {
+      setRespondOpen(false);
+      return;
+    }
+
+    onSendMessage(respondSubmissionId, response.trim());
     setRespondOpen(false);
-    // If later you want follow-ups to be tracked, call onSendMessage here.
+    setRespondSubmissionId(null);
   };
 
   const openRespondDialog = (submissionId: string, message: string) => {
@@ -136,6 +146,7 @@ export const Messages = ({
 
     setRespondClientName(clientLabel);
     setRespondOriginalMessage(message);
+    setRespondSubmissionId(submissionId);
     setRespondOpen(true);
   };
 

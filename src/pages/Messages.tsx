@@ -79,10 +79,10 @@ export const Messages = ({
 
   // Helper: generate a "professional" message from a natural-language prompt
   const buildSuggestedMessage = (prompt: string, company: string): string => {
-    const lower = prompt.toLowerCase().trim();
+    const lowerPrompt = prompt.toLowerCase().trim();
 
-    // Common case: asking how the report was
-    if (lower.includes("report")) {
+    // Special case: explicit "report" follow-up
+    if (lowerPrompt.includes("report")) {
       return `Hi ${company} team,
 
 I hope you’re doing well. I wanted to follow up on the report we recently shared and see how it landed on your side. Please let us know if everything met your expectations or if there are any questions, clarifications, or changes you’d like us to make.
@@ -91,14 +91,72 @@ Best regards,
 Tangram Team`;
     }
 
-    // Generic professional wrapper
-    const cleaned =
-      prompt.charAt(0).toUpperCase() +
-      prompt.trim().replace(/\.$/, "");
+    // Try to strip scaffolding like:
+    // "write a message to Innovation Labs saying 3d printing is best based on geometry in a professional tone"
+    let core = prompt;
+
+    // Remove "write/draft ... message/email to <client>" prefix if present
+    const scaffoldRegex = /(write|draft)\s+(an\s+)?(email|message)\s+to\s+[^,]+/i;
+    if (scaffoldRegex.test(core)) {
+      core = core.replace(scaffoldRegex, "");
+    }
+
+    // If there's "saying" or "that", keep what's after it
+    const lowerCore = core.toLowerCase();
+    const sayingIdx = lowerCore.indexOf("saying");
+    const thatIdx = lowerCore.indexOf("that");
+    let cutIdx = -1;
+    if (sayingIdx !== -1) {
+      cutIdx = sayingIdx + "saying".length;
+    } else if (thatIdx !== -1) {
+      cutIdx = thatIdx + "that".length;
+    }
+    if (cutIdx !== -1) {
+      core = core.slice(cutIdx);
+    }
+
+    // Clean up leading punctuation/whitespace
+    core = core.replace(/^[:\s,]*/g, "");
+
+    // Strip "in a professional tone/manner" / "professionally" at the end
+    core = core
+      .replace(/in a professional( tone| manner)?\.?$/i, "")
+      .replace(/professionally\.?$/i, "")
+      .trim();
+
+    // If nothing meaningful left, fall back to a generic follow-up
+    if (!core) {
+      return `Hi ${company} team,
+
+I hope you’re doing well. I wanted to quickly follow up regarding your project and see if there is anything we can clarify or help with.
+
+Best regards,
+Tangram Team`;
+    }
+
+    const coreLower = core.toLowerCase();
+
+    // Slightly smarter template if we're talking about 3D printing
+    if (coreLower.includes("3d printing")) {
+      return `Hi ${company} team,
+
+Based on your part geometry, we believe 3D printing is the best manufacturing option for this project. It should give you the right balance between lead time, flexibility for design changes, and overall cost at your expected volumes.
+
+Best regards,
+Tangram Team`;
+    }
+
+    // Generic professional wrapper around the cleaned core instruction
+    let sentence = core.trim();
+    sentence =
+      sentence.charAt(0).toUpperCase() + sentence.slice(1);
+    if (!/[.!?]$/.test(sentence)) {
+      sentence += ".";
+    }
 
     return `Hi ${company} team,
 
-${cleaned}.
+${sentence}
 
 Best regards,
 Tangram Team`;
@@ -171,7 +229,7 @@ Tangram Team`;
 
     onSendMessage(assistantSuggestion.submissionId, assistantSuggestion.text);
     setSelectedCase(assistantSuggestion.submissionId);
-    setMessage(""); // they already sent the AI draft
+    setMessage(""); // already sent the AI draft
     setAssistantSuggestion(null);
     setChatbotInput("");
   };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Check, X as XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -12,14 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Submission } from "@/types/submission";
 import tangramLogo from "@/assets/tangram_cube.jpg";
 import { RespondDialog } from "@/components/RespondDialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface MessagesProps {
   submissions: Submission[];
@@ -43,8 +35,11 @@ export const Messages = ({
 
   // Tangram Assistant state
   const [chatbotInput, setChatbotInput] = useState<string>("");
-  const [assistantDialogOpen, setAssistantDialogOpen] = useState(false);
-  const [assistantSelectedCase, setAssistantSelectedCase] = useState("");
+  const [assistantSuggestion, setAssistantSuggestion] = useState<{
+    submissionId: string;
+    clientLabel: string;
+    text: string;
+  } | null>(null);
 
   // Respond dialog state (for Follow up / Respond)
   const [respondOpen, setRespondOpen] = useState(false);
@@ -54,6 +49,60 @@ export const Messages = ({
   const [respondSubmissionId, setRespondSubmissionId] = useState<string | null>(
     null
   );
+
+  // Helper: find which submission/client the prompt is about
+  const findTargetSubmission = (prompt: string): Submission | undefined => {
+    const lower = prompt.toLowerCase();
+
+    // Try full company-name match first
+    for (const sub of submissions) {
+      const company = (sub.company || "").toLowerCase();
+      if (company && lower.includes(company)) return sub;
+    }
+
+    // Then try matching just the first word of company name
+    for (const sub of submissions) {
+      const company = (sub.company || "").toLowerCase();
+      if (!company) continue;
+      const firstWord = company.split(" ")[0];
+      if (firstWord && lower.includes(firstWord)) return sub;
+    }
+
+    // Fallback: currently-selected case
+    if (selectedCase) {
+      return submissions.find((s) => s.id === selectedCase) || submissions[0];
+    }
+
+    // Final fallback: first submission
+    return submissions[0];
+  };
+
+  // Helper: generate a "professional" message from a natural-language prompt
+  const buildSuggestedMessage = (prompt: string, company: string): string => {
+    const lower = prompt.toLowerCase().trim();
+
+    // Common case: asking how the report was
+    if (lower.includes("report")) {
+      return `Hi ${company} team,
+
+I hope you’re doing well. I wanted to follow up on the report we recently shared and see how it landed on your side. Please let us know if everything met your expectations or if there are any questions, clarifications, or changes you’d like us to make.
+
+Best regards,
+Tangram Team`;
+    }
+
+    // Generic professional wrapper
+    const cleaned =
+      prompt.charAt(0).toUpperCase() +
+      prompt.trim().replace(/\.$/, "");
+
+    return `Hi ${company} team,
+
+${cleaned}.
+
+Best regards,
+Tangram Team`;
+  };
 
   // Derived "received" messages (reference from each submission)
   const receivedMessages = submissions.map((submission) => {
@@ -99,27 +148,36 @@ export const Messages = ({
     setMessage("");
   };
 
-  // AI Assistant: click arrow in Tangram Assistant card
-  const handleAssistantSendClick = () => {
-    if (!chatbotInput.trim()) return;
-    setAssistantDialogOpen(true);
+  // Tangram Assistant: generate suggestion
+  const handleAssistantGenerate = () => {
+    if (!chatbotInput.trim() || submissions.length === 0) return;
+
+    const target = findTargetSubmission(chatbotInput);
+    if (!target) return;
+
+    const clientLabel = target.company || "Client";
+    const text = buildSuggestedMessage(chatbotInput, clientLabel);
+
+    setAssistantSuggestion({
+      submissionId: target.id,
+      clientLabel,
+      text,
+    });
   };
 
-  // When user clicks "Open Case" in the AI Assistant dialog:
-  //  - send chatbotInput as message
-  //  - show it in Sent column
-  //  - pre-select the client in the Send panel
-  const handleAssistantOpenCase = () => {
-    if (!assistantSelectedCase || !chatbotInput.trim()) return;
+  // Accept suggested AI message -> goes straight to Sent
+  const handleAssistantAccept = () => {
+    if (!assistantSuggestion) return;
 
-    onSendMessage(assistantSelectedCase, chatbotInput.trim());
-
-    // Pre-select client + message in Send UI
-    setSelectedCase(assistantSelectedCase);
-    setMessage(chatbotInput.trim());
-
+    onSendMessage(assistantSuggestion.submissionId, assistantSuggestion.text);
+    setSelectedCase(assistantSuggestion.submissionId);
+    setMessage(""); // they already sent the AI draft
+    setAssistantSuggestion(null);
     setChatbotInput("");
-    setAssistantDialogOpen(false);
+  };
+
+  const handleAssistantReject = () => {
+    setAssistantSuggestion(null);
   };
 
   // When we hit "Send Response" in the RespondDialog,
@@ -220,7 +278,8 @@ export const Messages = ({
               <div>
                 <p className="font-medium text-sm">Tangram Assistant</p>
                 <p className="text-xs text-muted-foreground">
-                  Use AI to help draft messages, then edit and send.
+                  Ask in plain language – we’ll draft a professional message you
+                  can send.
                 </p>
               </div>
             </div>
@@ -229,19 +288,44 @@ export const Messages = ({
               <Input
                 value={chatbotInput}
                 onChange={(e) => setChatbotInput(e.target.value)}
-                placeholder="Ask Tangram to help write a message…"
+                placeholder="e.g. write a message to TechCorp asking how their report was…"
                 onKeyDown={(e) =>
-                  e.key === "Enter" && handleAssistantSendClick()
+                  e.key === "Enter" && handleAssistantGenerate()
                 }
               />
               <Button
-                onClick={handleAssistantSendClick}
+                onClick={handleAssistantGenerate}
                 size="icon"
                 disabled={!chatbotInput.trim()}
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
+
+            {assistantSuggestion && (
+              <div className="mt-3 border rounded-md p-3 bg-muted">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">
+                    Suggested message to {assistantSuggestion.clientLabel}
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleAssistantReject}
+                    >
+                      <XIcon className="h-4 w-4" />
+                    </Button>
+                    <Button size="icon" onClick={handleAssistantAccept}>
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-sm whitespace-pre-line">
+                  {assistantSuggestion.text}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -340,57 +424,6 @@ export const Messages = ({
           </div>
         </div>
       </div>
-
-      {/* AI Assistant dialog for "Open Case" */}
-      <Dialog
-        open={assistantDialogOpen}
-        onOpenChange={setAssistantDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>AI Assistant</DialogTitle>
-            <DialogDescription>
-              Which client would you like to contact?
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-3">
-            <Select
-              value={assistantSelectedCase}
-              onValueChange={(value) => setAssistantSelectedCase(value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choose a case…" />
-              </SelectTrigger>
-              <SelectContent>
-                {submissions.map((submission) => {
-                  const s = submission as any;
-                  const label =
-                    s?.clientName ??
-                    s?.company ??
-                    s?.projectName ??
-                    `Case ${submission.id}`;
-                  return (
-                    <SelectItem key={submission.id} value={submission.id}>
-                      {label}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <DialogFooter>
-            <Button
-              className="w-full"
-              onClick={handleAssistantOpenCase}
-              disabled={!assistantSelectedCase || !chatbotInput.trim()}
-            >
-              Open Case
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <RespondDialog
         open={respondOpen}

@@ -55,17 +55,31 @@ export const Messages = ({
   // Derived "received" messages (reference from each submission)
   const receivedMessages = submissions.map((submission) => {
     const s = submission as any;
+
     const clientLabel =
       s?.clientName ??
       s?.company ??
       s?.projectName ??
       `Case ${submission.id}`;
 
-    const referenceMessage =
-      s?.referenceMessage ??
-      s?.clientMessage ??
-      s?.notes ??
-      "Reference message from client about this case.";
+    let referenceMessage = "";
+
+    if (submission.company === "TechCorp Industries") {
+      referenceMessage =
+        "Hi team, we’re evaluating suppliers for this triangular enclosure. Can you confirm whether the 0.8–1.2 mm wall thickness is acceptable for tooling? Also, could you advise if a textured finish is possible on the outer face?";
+    } else if (submission.company === "BuildRight Solutions") {
+      referenceMessage =
+        "Hello, attached are the specs for the square housing. We mainly need cost estimates at 1,000 units and 5,000 units. Please confirm if aluminum tooling is required or if composite molds would work.";
+    } else if (submission.company === "Innovation Labs") {
+      referenceMessage =
+        "Hi, we’re looking to prototype this circular casing before moving to full production. Could you provide recommendations on whether we should start with 3D printing or soft tooling based on our geometry?";
+    } else {
+      referenceMessage =
+        s?.referenceMessage ??
+        s?.clientMessage ??
+        s?.notes ??
+        "Client message not provided.";
+    }
 
     return {
       id: submission.id,
@@ -85,7 +99,6 @@ export const Messages = ({
   // AI Assistant: click arrow in Tangram Assistant card
   const handleAssistantSendClick = () => {
     if (!chatbotInput.trim()) return;
-    // Open AI assistant dialog to pick which client this should go to
     setAssistantDialogOpen(true);
   };
 
@@ -193,7 +206,7 @@ export const Messages = ({
                 alt="Tangram"
                 className="h-8 w-8 rounded-md object-cover"
               />
-            <div>
+              <div>
                 <p className="font-medium text-sm">Tangram Assistant</p>
                 <p className="text-xs text-muted-foreground">
                   Use AI to help draft messages, then edit and send.

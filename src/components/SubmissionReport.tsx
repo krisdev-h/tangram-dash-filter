@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Plane, Edit2 } from "lucide-react";
+import { Plane, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -64,6 +64,7 @@ export const SubmissionReport = ({
     );
   };
 
+  // -------- PENDING STAGE --------
   if (stage === "pending") {
     return (
       <Dialog open={open} onOpenChange={handleClose}>
@@ -71,14 +72,7 @@ export const SubmissionReport = ({
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">3D Preview</h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleClose}
-                className="h-8 w-8"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              {/* No custom X button here — Dialog provides its own close control */}
             </div>
 
             <TriangleViewer
@@ -167,6 +161,7 @@ export const SubmissionReport = ({
     );
   }
 
+  // -------- REVIEWING STAGE --------
   if (stage === "reviewing") {
     return (
       <Dialog open={open} onOpenChange={onClose}>
@@ -269,6 +264,7 @@ export const SubmissionReport = ({
     );
   }
 
+  // -------- REPORT STAGE --------
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
